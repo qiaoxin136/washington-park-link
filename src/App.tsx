@@ -10,7 +10,7 @@ import "@aws-amplify/ui-react/styles.css";
 import "maplibre-gl/dist/maplibre-gl.css"; // Import maplibre-gl styles
 import { NavigationControl, MapRef } from "react-map-gl";
 
-import { Map, MapProps, useControl } from "react-map-gl";
+import { Map, MapProps, useControl, Popup } from "react-map-gl";
 import maplibregl from "maplibre-gl";
 
 import { MapboxOverlay } from "@deck.gl/mapbox/typed";
@@ -99,6 +99,8 @@ function App() {
 
   const [file, setFile] = useState<FileType>();
   //const [tab, setTab] = useState("1");
+  const [showPopup, setShowPopup] = useState(true);
+  const [selected, setSelected] = useState([]);
 
   const layers = [
     new GeoJsonLayer({
@@ -145,11 +147,11 @@ function App() {
 
   const handleClick1 = useCallback((info: any /* event: any */) => {
     if (info.object) {
-      console.log(
-        "Clicked object:",
-        Object.entries(info.object.geometry)[1][1]
-      );
-      // setSelected(info.object);
+      // console.log(
+      //   info.object.properties
+      // );
+      setSelected(info.object.properties);
+      console.log(selected);
     } else {
       //console.log('Clicked on the map at:', info.coordinate);
     }
@@ -170,9 +172,8 @@ function App() {
     latitude: 26.00068,
     zoom: 17,
     pitch: 0,
-    bearing: 0
+    bearing: 0,
   } as any);
-
 
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -281,18 +282,18 @@ function App() {
           //controller={true}
           onClick={handleClick1}
           onHover={handleHover}
-        />
-        <NavigationControl position="top-left" />
-        {/* {selected && (
+        ></DeckGLOverlay>
+        {selected && (
           <Popup
-            longitude={Object.entries(selected)[1][1]}
-            latitude={40}
+            longitude={-80.20321}
+            latitude={26.00068}
             anchor="bottom"
             onClose={() => setShowPopup(false)}
           >
             You are here
           </Popup>
-        )}  */}
+        )}
+        <NavigationControl position="top-left" />
       </Map>
       <Divider orientation="horizontal" />
       <br />
