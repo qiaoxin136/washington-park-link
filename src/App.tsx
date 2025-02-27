@@ -99,7 +99,7 @@ function App() {
 
   const [file, setFile] = useState<FileType>();
   //const [tab, setTab] = useState("1");
-  const [showPopup, setShowPopup] = useState(true);
+  //const [showPopup, setShowPopup] = useState(true);
   const [selected, setSelected] = useState([]);
 
   const layers = [
@@ -288,7 +288,7 @@ function App() {
             longitude={-80.20321}
             latitude={26.00068}
             anchor="bottom"
-            onClose={() => setShowPopup(false)}
+            // onClose={() => setShowPopup(false)}
           >
             You are here
           </Popup>
