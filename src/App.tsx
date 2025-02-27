@@ -1,8 +1,20 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useEffect, useState, ChangeEvent, useRef, useCallback } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { generateClient } from "aws-amplify/data";
 import "@aws-amplify/ui-react/styles.css";
+
+import { MapboxOverlayProps } from "@deck.gl/mapbox/typed";
+import "@aws-amplify/ui-react/styles.css";
+
+import "maplibre-gl/dist/maplibre-gl.css"; // Import maplibre-gl styles
+import { NavigationControl, MapRef } from "react-map-gl";
+
+import { Map, MapProps, useControl } from "react-map-gl";
+import maplibregl from "maplibre-gl";
+
+import { MapboxOverlay } from "@deck.gl/mapbox/typed";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 import {
   Input,
@@ -17,12 +29,13 @@ import {
   Theme,
   Divider,
   ScrollView,
-  Tabs,
+  //Tabs,
   ToggleButton,
   // TextField,
 } from "@aws-amplify/ui-react";
 
 import "@aws-amplify/ui-react/styles.css";
+import { GeoJsonLayer } from "@deck.gl/layers/typed";
 
 import { uploadData } from "aws-amplify/storage";
 
@@ -60,6 +73,18 @@ const theme: Theme = {
   },
 };
 
+const AIR_PORTS =
+  "https://u7wrupm2a5.execute-api.us-east-1.amazonaws.com/test/getData";
+
+const MAP_STYLE =
+  "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+
+function DeckGLOverlay(props: MapboxOverlayProps) {
+  const overlay = useControl<MapboxOverlay>(() => new MapboxOverlay(props));
+  overlay.setProps(props);
+  return null;
+}
+
 function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   const { signOut } = useAuthenticator();
@@ -73,7 +98,25 @@ function App() {
   const [resolved, setResolved] = useState(false);
 
   const [file, setFile] = useState<FileType>();
-  const [tab, setTab] = useState("1");
+  //const [tab, setTab] = useState("1");
+
+  const layers = [
+    new GeoJsonLayer({
+      id: "airports",
+      data: AIR_PORTS,
+      // Styles
+      filled: true,
+      pointRadiusMinPixels: 2,
+      pointRadiusScale: 5,
+      getPointRadius: 2,
+      getFillColor: [200, 0, 80, 180],
+      // Interactive props
+      pickable: true,
+      autoHighlight: true,
+      //onClick: (info) => setSelected(info.object),
+      // beforeId: 'watername_ocean' // In interleaved mode, render the layer under map labels
+    }),
+  ];
 
   const handleChange = (event: any) => {
     setFile(event.target.files?.[0]);
@@ -99,6 +142,37 @@ function App() {
   const handleDate = (e: ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
   };
+
+  const handleClick1 = useCallback((info: any /* event: any */) => {
+    if (info.object) {
+      console.log(
+        "Clicked object:",
+        Object.entries(info.object.geometry)[1][1]
+      );
+      // setSelected(info.object);
+    } else {
+      //console.log('Clicked on the map at:', info.coordinate);
+    }
+  }, []);
+
+  const handleHover = useCallback((info: any /* event: any */) => {
+    if (info.object) {
+      // console.log("Hover object:", info.object);
+      // setHoverInfo(info.object);
+    } else {
+      // console.log('Hover on the map at:', info.coordinate);
+    }
+  }, []);
+
+  const mapRef = useRef<MapRef | null>(null);
+  const [viewState, setViewState] = useState<MapProps["viewState"]>({
+    longitude: -80.20321,
+    latitude: 26.00068,
+    zoom: 17,
+    pitch: 0,
+    bearing: 0
+  } as any);
+
 
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -191,78 +265,85 @@ function App() {
           Resolve (click)
         </ToggleButton>
       </Flex>
-      <Tabs
-        value={tab}
-        onValueChange={(tab) => setTab(tab)}
-        items={[
-          {
-            label: "Complaint Data",
-            value: "1",
-            content: (
-              <>
-                <ScrollView
-                  as="div"
-                  ariaLabel="View example"
-                  backgroundColor="var(--amplify-colors-white)"
-                  borderRadius="6px"
-                  //border="1px solid var(--amplify-colors-black)"
-                  // boxShadow="3px 3px 5px 6px var(--amplify-colors-neutral-60)"
-                  color="var(--amplify-colors-blue-60)"
-                  // height="45rem"
-                  // maxWidth="100%"
-                  padding="1rem"
-                  // width="100%"
-                  width="2400px"
-                  height={"2400px"}
-                  maxHeight={"2400px"}
-                  maxWidth="2400px"
-                >
-                  <ThemeProvider theme={theme} colorMode="light">
-                    <Table caption="" highlightOnHover={false}>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell as="th">Name</TableCell>
-                          <TableCell as="th">Description</TableCell>
-                          <TableCell as="th">Date</TableCell>
-                          <TableCell as="th">Report</TableCell>
-                          <TableCell as="th">Latitude</TableCell>
-                          <TableCell as="th">Longitude</TableCell>
-                          <TableCell as="th">Resolved</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {todos.map((todo) => (
-                          <TableRow
-                            onClick={() => deleteTodo(todo.id)}
-                            key={todo.id}
-                          >
-                            <TableCell>{todo.person}</TableCell>
-                            <TableCell>{todo.description}</TableCell>
-                            <TableCell>{todo.date}</TableCell>
-                            <TableCell>{todo.report}</TableCell>
-                            <TableCell>{todo.lat}</TableCell>
-                            <TableCell>{todo.long}</TableCell>
-                            <TableCell>{todo.status}</TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </ThemeProvider>
-                </ScrollView>
-              </>
-            ),
-          },
-          {
-            label: "Complaint Map",
-            value: "2",
-            content: (
-              <>
-               
-              </>
-            ),
-          },
-        ]}
-      />
+      <Divider orientation="horizontal" />
+      <br />
+      <Map
+        ref={mapRef}
+        mapLib={maplibregl}
+        mapStyle={MAP_STYLE} // Use any MapLibre-compatible style
+        {...viewState}
+        onMove={({ viewState }) => setViewState(viewState as any)}
+        style={{ width: "100%", height: "800px" }}
+      >
+        <DeckGLOverlay
+          layers={layers}
+          // interleaved
+          //controller={true}
+          onClick={handleClick1}
+          onHover={handleHover}
+        />
+        <NavigationControl position="top-left" />
+        {/* {selected && (
+          <Popup
+            longitude={Object.entries(selected)[1][1]}
+            latitude={40}
+            anchor="bottom"
+            onClose={() => setShowPopup(false)}
+          >
+            You are here
+          </Popup>
+        )}  */}
+      </Map>
+      <Divider orientation="horizontal" />
+      <br />
+
+      <ScrollView
+        as="div"
+        ariaLabel="View example"
+        backgroundColor="var(--amplify-colors-white)"
+        borderRadius="6px"
+        //border="1px solid var(--amplify-colors-black)"
+        // boxShadow="3px 3px 5px 6px var(--amplify-colors-neutral-60)"
+        color="var(--amplify-colors-blue-60)"
+        // height="45rem"
+        // maxWidth="100%"
+        padding="1rem"
+        // width="100%"
+        width="2400px"
+        height={"2400px"}
+        maxHeight={"2400px"}
+        maxWidth="2400px"
+      >
+        <ThemeProvider theme={theme} colorMode="light">
+          <Table caption="" highlightOnHover={false}>
+            <TableHead>
+              <TableRow>
+                <TableCell as="th">Name</TableCell>
+                <TableCell as="th">Description</TableCell>
+                <TableCell as="th">Date</TableCell>
+                <TableCell as="th">Report</TableCell>
+                <TableCell as="th">Latitude</TableCell>
+                <TableCell as="th">Longitude</TableCell>
+                <TableCell as="th">Resolved</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {todos.map((todo) => (
+                <TableRow onClick={() => deleteTodo(todo.id)} key={todo.id}>
+                  <TableCell>{todo.person}</TableCell>
+                  <TableCell>{todo.description}</TableCell>
+                  <TableCell>{todo.date}</TableCell>
+                  <TableCell>{todo.report}</TableCell>
+                  <TableCell>{todo.lat}</TableCell>
+                  <TableCell>{todo.long}</TableCell>
+                  <TableCell>{todo.status}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ThemeProvider>
+      </ScrollView>
+
       {/* <button onClick={signOut}>Sign out</button> */}
     </main>
   );
