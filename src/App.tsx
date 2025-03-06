@@ -95,7 +95,7 @@ type DataT = {
 };
 
 const AIR_PORTS =
-  "https://u7wrupm2a5.execute-api.us-east-1.amazonaws.com/test/getData";
+  "https://d7qwin8btb.execute-api.us-east-1.amazonaws.com/test/getData";
 
 const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
