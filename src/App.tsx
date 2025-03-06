@@ -93,6 +93,7 @@ type DataT = {
     date: string;
     report: string;
     status: string;
+    id: string;
   };
 };
 
@@ -239,7 +240,7 @@ function App() {
     const d = info.object as DataT;
     if (d) {
       setClickInfo(d);
-      //console.log(clickInfo);
+      console.log(clickInfo);
       console.log(showPopup);
       return {
         html: `<div>${d.properties.date}</div>
@@ -358,7 +359,7 @@ function App() {
                     onClose={() => setShowPopup(false)}
                   >
                     {clickInfo.properties.person} <br />
-                    <Button >Delete </Button>
+                    <Button onClick={() => deleteTodo(clickInfo.properties.id)}>Delete </Button>
                   </Popup>
                   )}
                   <NavigationControl position="top-left" />
