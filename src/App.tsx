@@ -239,7 +239,8 @@ function App() {
     const d = info.object as DataT;
     if (d) {
       setClickInfo(d);
-      console.log(clickInfo);
+      //console.log(clickInfo);
+      console.log(showPopup);
       return {
         html: `<div>${d.properties.date}</div>
         
