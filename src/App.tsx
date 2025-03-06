@@ -34,7 +34,7 @@ import {
   Theme,
   Divider,
   ScrollView,
-  //Tabs,
+  Tabs,
   ToggleButton,
   // TextField,
 } from "@aws-amplify/ui-react";
@@ -96,8 +96,8 @@ type DataT = {
   };
 };
 
-// interface Info {
-//   coordinate: { x: number; y: number };
+// interface Coord {
+//   coordinate: { 0: number; 1: number };
 // }
 
 const AIR_PORTS =
@@ -130,10 +130,11 @@ function App() {
   const [resolved, setResolved] = useState(false);
 
   const [file, setFile] = useState<FileType>();
-  //const [tab, setTab] = useState("1");
+  const [tab, setTab] = useState("1");
   //const [showPopup, setShowPopup] = useState(true);
 
   const [clickInfo, setClickInfo] = useState<DataT>();
+  //const [grid, setGrid]=useState([]);
 
   const layers = [
     new GeoJsonLayer({
@@ -231,25 +232,17 @@ function App() {
   }
 
   function onClick(info: PickingInfo) {
-    console.log((info.coordinate));
-    setLat(info.coordinate[1]);
-    setLng(info.coordinate[0]);
+    //const safeInfo=info|| [];
+    let newArray = [];
+    for (let i = 0; i < 2; i++) {
+      newArray.push(info.coordinate[i]);
+    }
+    setLng(newArray[0]);
+    setLat(newArray[1]);
     const d = info.object as DataT;
     if (d) {
-      
       // console.log(d);
       setClickInfo(d);
-      //console.log(clickInfo);
-      // return (
-      //   <Popup
-      //     latitude={d.geometry.coordinates[1]}
-      //     longitude={d.geometry.coordinates[0]}
-      //   >
-      //     {d.properties.date}
-
-      //     {d.properties.person}
-      //   </Popup>
-      // );
     }
   }
 
@@ -314,81 +307,111 @@ function App() {
       </Flex>
       <Divider orientation="horizontal" />
       <br />
-      <Map
-        initialViewState={{
-          longitude: -80.2,
-          latitude: 26.005,
-          zoom: 17,
-        }}
-        mapLib={maplibregl}
-        mapStyle={MAP_STYLE} // Use any MapLibre-compatible style
-        style={{ width: "100%", height: "800px", borderColor:"#000000"}}
-      >
-        <DeckGLOverlay
-          layers={layers}
-          getTooltip={getTooltip}
-          onClick={onClick}
-        />
-        <Marker latitude={lat} longitude={lng} />
-        {clickInfo && (
-          <Popup
-            latitude={clickInfo.geometry.coordinates[1]}
-            longitude={clickInfo.geometry.coordinates[0]}
-          >
-            <button> Click me</button>
-          </Popup>
-        )}
-        <NavigationControl position="top-left" />
-      </Map>
+
+      <Tabs
+        value={tab}
+        onValueChange={(tab) => setTab(tab)}
+        items={[
+          {
+            label: "Complaint Data",
+            value: "1",
+            content: (
+              <>
+                <Map
+                  initialViewState={{
+                    longitude: -80.2,
+                    latitude: 26.005,
+                    zoom: 17,
+                  }}
+                  mapLib={maplibregl}
+                  mapStyle={MAP_STYLE} // Use any MapLibre-compatible style
+                  style={{
+                    width: "100%",
+                    height: "800px",
+                    borderColor: "#000000",
+                  }}
+                >
+                  <DeckGLOverlay
+                    layers={layers}
+                    getTooltip={getTooltip}
+                    onClick={onClick}
+                  />
+                  <Marker latitude={lat} longitude={lng} />
+                  {clickInfo && (
+                    <Popup
+                      latitude={clickInfo.geometry.coordinates[1]}
+                      longitude={clickInfo.geometry.coordinates[0]}
+                    >
+                      <button> Click me</button>
+                    </Popup>
+                  )}
+                  <NavigationControl position="top-left" />
+                </Map>
+              </>
+            ),
+          },
+          {
+            label: "Complaint Map",
+            value: "2",
+            content: (
+              <>
+                <ScrollView
+                  as="div"
+                  ariaLabel="View example"
+                  backgroundColor="var(--amplify-colors-white)"
+                  borderRadius="6px"
+                  //border="1px solid var(--amplify-colors-black)"
+                  // boxShadow="3px 3px 5px 6px var(--amplify-colors-neutral-60)"
+                  color="var(--amplify-colors-blue-60)"
+                  // height="45rem"
+                  // maxWidth="100%"
+                  padding="1rem"
+                  // width="100%"
+                  width="2400px"
+                  height={"2400px"}
+                  maxHeight={"2400px"}
+                  maxWidth="2400px"
+                >
+                  <ThemeProvider theme={theme} colorMode="light">
+                    <Table caption="" highlightOnHover={false}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell as="th">Name</TableCell>
+                          <TableCell as="th">Description</TableCell>
+                          <TableCell as="th">Date</TableCell>
+                          <TableCell as="th">Report</TableCell>
+                          <TableCell as="th">Latitude</TableCell>
+                          <TableCell as="th">Longitude</TableCell>
+                          <TableCell as="th">Resolved</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {todos.map((todo) => (
+                          <TableRow
+                            onClick={() => deleteTodo(todo.id)}
+                            key={todo.id}
+                          >
+                            <TableCell>{todo.person}</TableCell>
+                            <TableCell>{todo.description}</TableCell>
+                            <TableCell>{todo.date}</TableCell>
+                            <TableCell>{todo.report}</TableCell>
+                            <TableCell>{todo.lat}</TableCell>
+                            <TableCell>{todo.long}</TableCell>
+                            <TableCell>{todo.status}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ThemeProvider>
+                </ScrollView>
+              </>
+            ),
+          },
+        ]}
+      />
+
       <Divider orientation="horizontal" />
       <br />
-
-      <ScrollView
-        as="div"
-        ariaLabel="View example"
-        backgroundColor="var(--amplify-colors-white)"
-        borderRadius="6px"
-        //border="1px solid var(--amplify-colors-black)"
-        // boxShadow="3px 3px 5px 6px var(--amplify-colors-neutral-60)"
-        color="var(--amplify-colors-blue-60)"
-        // height="45rem"
-        // maxWidth="100%"
-        padding="1rem"
-        // width="100%"
-        width="2400px"
-        height={"2400px"}
-        maxHeight={"2400px"}
-        maxWidth="2400px"
-      >
-        <ThemeProvider theme={theme} colorMode="light">
-          <Table caption="" highlightOnHover={false}>
-            <TableHead>
-              <TableRow>
-                <TableCell as="th">Name</TableCell>
-                <TableCell as="th">Description</TableCell>
-                <TableCell as="th">Date</TableCell>
-                <TableCell as="th">Report</TableCell>
-                <TableCell as="th">Latitude</TableCell>
-                <TableCell as="th">Longitude</TableCell>
-                <TableCell as="th">Resolved</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {todos.map((todo) => (
-                <TableRow onClick={() => deleteTodo(todo.id)} key={todo.id}>
-                  <TableCell>{todo.person}</TableCell>
-                  <TableCell>{todo.description}</TableCell>
-                  <TableCell>{todo.date}</TableCell>
-                  <TableCell>{todo.report}</TableCell>
-                  <TableCell>{todo.lat}</TableCell>
-                  <TableCell>{todo.long}</TableCell>
-                  <TableCell>{todo.status}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ThemeProvider>
-      </ScrollView>
 
       {/* <button onClick={signOut}>Sign out</button> */}
     </main>
