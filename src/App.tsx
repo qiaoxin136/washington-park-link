@@ -13,6 +13,7 @@ import {
   Map,
   useControl,
   Popup,
+  Marker,
   NavigationControl,
 } from "react-map-gl";
 
@@ -42,6 +43,7 @@ import "@aws-amplify/ui-react/styles.css";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
 
 import { uploadData } from "aws-amplify/storage";
+//import { MapView } from "@aws-amplify/ui-react-geo";
 
 // Define the type for the file object
 type FileType = File | null;
@@ -93,6 +95,10 @@ type DataT = {
     status: string;
   };
 };
+
+// interface Info {
+//   coordinate: { x: number; y: number };
+// }
 
 const AIR_PORTS =
   "https://d7qwin8btb.execute-api.us-east-1.amazonaws.com/test/getData";
@@ -172,9 +178,6 @@ function App() {
     setDate(e.target.value);
   };
 
-
-
-
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
@@ -228,21 +231,25 @@ function App() {
   }
 
   function onClick(info: PickingInfo) {
+    console.log((info.coordinate));
+    setLat(info.coordinate[1]);
+    setLng(info.coordinate[0]);
     const d = info.object as DataT;
     if (d) {
+      
       // console.log(d);
       setClickInfo(d);
       //console.log(clickInfo);
-      return (
-        <Popup
-          latitude={d.geometry.coordinates[1]}
-          longitude={d.geometry.coordinates[0]}
-        >
-          {d.properties.date}
+      // return (
+      //   <Popup
+      //     latitude={d.geometry.coordinates[1]}
+      //     longitude={d.geometry.coordinates[0]}
+      //   >
+      //     {d.properties.date}
 
-          {d.properties.person}
-        </Popup>
-      );
+      //     {d.properties.person}
+      //   </Popup>
+      // );
     }
   }
 
@@ -315,13 +322,14 @@ function App() {
         }}
         mapLib={maplibregl}
         mapStyle={MAP_STYLE} // Use any MapLibre-compatible style
-        style={{ width: "100%", height: "800px" }}
+        style={{ width: "100%", height: "800px", borderColor:"#000000"}}
       >
         <DeckGLOverlay
           layers={layers}
           getTooltip={getTooltip}
           onClick={onClick}
         />
+        <Marker latitude={lat} longitude={lng} />
         {clickInfo && (
           <Popup
             latitude={clickInfo.geometry.coordinates[1]}
