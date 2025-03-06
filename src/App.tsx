@@ -132,6 +132,7 @@ function App() {
   //const [showPopup, setShowPopup] = useState(true);
 
   const [clickInfo, setClickInfo] = useState<DataT>();
+  const [showPopup, setShowPopup] = useState<boolean>(true);
 
 
   const layers = [
@@ -237,9 +238,23 @@ function App() {
 
     const d = info.object as DataT;
     if (d) {
-      // console.log(d);
       setClickInfo(d);
+      console.log(clickInfo);
+      return {
+        html: `<div>${d.properties.date}</div>
+        
+        <div>${d.properties.person}</div>`,
+        style: {
+          backgroundColor: "#AFE1AF",
+          color: "#000",
+          padding: "5px",
+          borderRadius: "3px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+        },
+      };
     }
+
+    return null;
   }
 
   return (
@@ -309,7 +324,7 @@ function App() {
         onValueChange={(tab) => setTab(tab)}
         items={[
           {
-            label: "Complaint Data",
+            label: "Complaint Map",
             value: "1",
             content: (
               <>
@@ -335,11 +350,15 @@ function App() {
                   <Marker latitude={lat} longitude={lng} />
                   {clickInfo && (
                     <Popup
-                      latitude={clickInfo.geometry.coordinates[1]}
-                      longitude={clickInfo.geometry.coordinates[0]}
-                    >
-                      <button> Click me</button>
-                    </Popup>
+                    key={`${clickInfo.geometry.coordinates[0]}-${clickInfo.geometry.coordinates[1]}`}
+                    latitude={clickInfo.geometry.coordinates[1]}
+                    longitude={clickInfo.geometry.coordinates[0]}
+                    anchor="bottom"
+                    onClose={() => setShowPopup(false)}
+                  >
+                    {clickInfo.properties.person} <br />
+                    <Button >Delete </Button>
+                  </Popup>
                   )}
                   <NavigationControl position="top-left" />
                 </Map>
@@ -347,7 +366,7 @@ function App() {
             ),
           },
           {
-            label: "Complaint Map",
+            label: "Complaint Data",
             value: "2",
             content: (
               <>
