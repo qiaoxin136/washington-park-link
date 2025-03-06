@@ -96,9 +96,7 @@ type DataT = {
   };
 };
 
-// interface Coord {
-//   coordinate: { 0: number; 1: number };
-// }
+
 
 const AIR_PORTS =
   "https://d7qwin8btb.execute-api.us-east-1.amazonaws.com/test/getData";
@@ -134,7 +132,7 @@ function App() {
   //const [showPopup, setShowPopup] = useState(true);
 
   const [clickInfo, setClickInfo] = useState<DataT>();
-  //const [grid, setGrid]=useState([]);
+
 
   const layers = [
     new GeoJsonLayer({
@@ -233,12 +231,10 @@ function App() {
 
   function onClick(info: PickingInfo) {
     //const safeInfo=info|| [];
-    let newArray = [];
-    for (let i = 0; i < 2; i++) {
-      newArray.push(info.coordinate[i]);
-    }
-    setLng(newArray[0]);
-    setLat(newArray[1]);
+    const f = info.coordinate as [number, number];
+    setLng (f[0]);
+    setLat(f[1]);
+
     const d = info.object as DataT;
     if (d) {
       // console.log(d);
