@@ -145,7 +145,7 @@ function App() {
       pointRadiusMinPixels: 2,
       pointRadiusScale: 3,
       getPointRadius: 2,
-      getFillColor: (f: any) => f.properties.status==="false"
+      getFillColor: (f: any) => f.properties.status==="true"
       ? [0, 163, 108, 255]
       : [200, 0, 80, 180],
       // Interactive props
@@ -557,11 +557,15 @@ function App() {
                       latitude={clickInfo.geometry.coordinates[1]}
                       longitude={clickInfo.geometry.coordinates[0]}
                       anchor="bottom"
-                      onClose={() => setShowPopup(false)}
+                      onClose={() => setShowPopup(true)}
                     >
                       {clickInfo.properties.person} <br />
                       <Button
-                        onClick={() => deleteTodo(clickInfo.properties.id)}
+                        onClick={() => {
+                          deleteTodo(clickInfo.properties.id);
+                          setShowPopup(false);
+                        }}
+                        
                       >
                         Delete{" "}
                       </Button>
