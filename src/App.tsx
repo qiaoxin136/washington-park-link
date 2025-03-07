@@ -145,7 +145,7 @@ function App() {
       pointRadiusMinPixels: 2,
       pointRadiusScale: 3,
       getPointRadius: 2,
-      getFillColor: (f: any) => f.properties.status==="true"
+      getFillColor: (f: any) => f.properties.status==="false"
       ? [0, 163, 108, 255]
       : [200, 0, 80, 180],
       // Interactive props
@@ -372,7 +372,8 @@ function App() {
         return {
           html: `<u>Complaint</u> <br>
           <div>${d.properties.date}</div>
-        <div>${d.properties.person}</div>`,
+        <div>${d.properties.person}</div>
+        <div>resolved: ${d.properties.status}</div>`,
           style: {
             backgroundColor: "#AFE1AF",
             color: "#000",
