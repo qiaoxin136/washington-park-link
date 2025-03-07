@@ -145,7 +145,9 @@ function App() {
       pointRadiusMinPixels: 2,
       pointRadiusScale: 3,
       getPointRadius: 2,
-      getFillColor: [200, 0, 80, 180],
+      getFillColor: (f: any) => f.properties.status==="true"
+      ? [0, 163, 108, 255]
+      : [200, 0, 80, 180],
       // Interactive props
       pickable: true,
       autoHighlight: true,
