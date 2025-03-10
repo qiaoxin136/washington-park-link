@@ -42,6 +42,7 @@ import {
 
 import "@aws-amplify/ui-react/styles.css";
 import { GeoJsonLayer } from "@deck.gl/layers/typed";
+//import { IconLayer } from "@deck.gl/layers/typed";
 import { MVTLayer } from "@deck.gl/geo-layers/typed";
 
 import { uploadData } from "aws-amplify/storage";
@@ -137,23 +138,55 @@ function App() {
   const [checked, setChecked] = useState<boolean>(false);
 
   const layers = [
-    new GeoJsonLayer<DataT>({
-      id: "complaint",
+    // new GeoJsonLayer<DataT>({
+    //   id: "complaint",
+    //   data: AIR_PORTS,
+    //   // Styles
+    //   pointType: "icon",
+    //   filled: true,
+    //   pointRadiusMinPixels: 2,
+    //   pointRadiusScale: 3,
+    //   getPointRadius: 2,
+    //   getFillColor: (f: any) =>
+    //     f.properties.status === "true" ? [0, 163, 108, 255] : [200, 0, 80, 180],
+    //   // Interactive props
+    //   pickable: true,
+    //   autoHighlight: true,
+    //   // getPosition: d => d.coordinates,
+    //   getSize: 40,
+    //   iconAtlas:
+    //     "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png",
+    //   iconMapping:
+    //     "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.json",
+    //   //onClick: (info) => setSelected(info.object),
+    //   // beforeId: 'watername_ocean' // In interleaved mode, render the layer under map labels
+    // }),
+
+    new GeoJsonLayer({
+      id: "privatels",
       data: AIR_PORTS,
       // Styles
       filled: true,
+      pointType: "icon",
+      iconAtlas:
+        'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
+      iconMapping: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.json',
+      getIcon: (d: any) => "marker",
+      getIconSize: 10,
+      getIconColor: (d:any)=>(d.properties.status==="true" ?[80, 200, 120, 255]:[220, 20, 60,255]),
+      getIconAngle: 0,
+      iconSizeUnits: "meters",
+      iconSizeScale: 3,
+      iconSizeMinPixels: 6,
       pointRadiusMinPixels: 2,
-      pointRadiusScale: 3,
-      getPointRadius: 2,
-      getFillColor: (f: any) => f.properties.status==="true"
-      ? [0, 163, 108, 255]
-      : [200, 0, 80, 180],
+      pointRadiusScale: 9,
+      // getPointRadius: (f) => 11 - f.properties.scalerank,
+      //getFillColor: (d:any)=>(d.properties.status==="true" ?[220, 20, 60, 255]:[34, 35,25,255]),
       // Interactive props
       pickable: true,
       autoHighlight: true,
-      //onClick: (info) => setSelected(info.object),
-      // beforeId: 'watername_ocean' // In interleaved mode, render the layer under map labels
     }),
+
     new MVTLayer({
       id: "lateral",
       data: `https://a.tiles.mapbox.com/v4/hazensawyer.0t8hy4di/{z}/{x}/{y}.vector.pbf?access_token=pk.eyJ1IjoiaGF6ZW5zYXd5ZXIiLCJhIjoiY2xmNGQ3MDgyMTE3YjQzcnE1djRpOGVtNiJ9.U06GItbSVWFTsvfg9WwQWQ`,
@@ -533,9 +566,9 @@ function App() {
               <>
                 <Map
                   initialViewState={{
-                    longitude: -80.2,
-                    latitude: 26.005,
-                    zoom: 17,
+                    longitude: -80.20313322301595,
+                    latitude: 26.000381149529055,
+                    zoom: 16,
                   }}
                   mapLib={maplibregl}
                   mapStyle={MAP_STYLE} // Use any MapLibre-compatible style
@@ -565,7 +598,6 @@ function App() {
                           deleteTodo(clickInfo.properties.id);
                           setShowPopup(false);
                         }}
-                        
                       >
                         Delete{" "}
                       </Button>
