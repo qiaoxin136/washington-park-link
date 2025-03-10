@@ -171,7 +171,7 @@ function App() {
       iconAtlas:
         'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
       iconMapping: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.json',
-      getIcon: (d: any) => (d.properties.status==="true"?"marker":"marker"),
+      getIcon: () => ("marker"),
       getIconSize: 5,
       getIconColor: (d:any)=>(d.properties.status==="true" ?[80, 200, 120, 255]:[220, 20, 60,255]),
       getIconAngle: 0,
