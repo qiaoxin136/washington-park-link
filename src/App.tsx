@@ -163,7 +163,7 @@ function App() {
     // }),
 
     new GeoJsonLayer({
-      id: "privatels",
+      id: "complaint",
       data: AIR_PORTS,
       // Styles
       filled: true,
