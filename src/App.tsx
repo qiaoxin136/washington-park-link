@@ -169,11 +169,15 @@ function App() {
       filled: true,
       pointType: "icon",
       iconAtlas:
-        'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
-      iconMapping: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.json',
-      getIcon: () => ("marker"),
+        "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png",
+      iconMapping:
+        "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.json",
+      getIcon: () => "marker",
       getIconSize: 5,
-      getIconColor: (d:any)=>(d.properties.status==="true" ?[80, 200, 120, 255]:[220, 20, 60,255]),
+      getIconColor: (d: any) =>
+        d.properties.status === "true"
+          ? [80, 200, 120, 255]
+          : [220, 20, 60, 255],
       getIconAngle: 0,
       iconSizeUnits: "meters",
       iconSizeScale: 3,
@@ -340,6 +344,10 @@ function App() {
     }),
   ];
 
+  // const handleRoundChange = () => {
+  //   setShowPopup(!showPopup);
+  // };
+
   const handleChange = (event: any) => {
     setFile(event.target.files?.[0]);
   };
@@ -474,7 +482,7 @@ function App() {
     const d = info.object as DataT;
     if (d) {
       setClickInfo(d);
-      console.log(clickInfo);
+      //console.log(clickInfo);
       console.log(showPopup);
       return {
         html: `<div>${d.properties.date}</div>
@@ -590,7 +598,7 @@ function App() {
                       latitude={clickInfo.geometry.coordinates[1]}
                       longitude={clickInfo.geometry.coordinates[0]}
                       anchor="bottom"
-                      onClose={() => setShowPopup(true)}
+                      onClose={() => setShowPopup(false)}
                     >
                       {clickInfo.properties.person} <br />
                       <Button
@@ -604,11 +612,22 @@ function App() {
                     </Popup>
                   )}
                   <NavigationControl position="top-right" />
+                  {/* {showPopup && (
+                    <Popup
+                      longitude={-80.22}
+                      latitude={26.0}
+                      anchor="bottom"
+                      onClose={() => setShowPopup(false)}
+                    >
+                      You are here
+                    </Popup>
+                  )} */}
                   <CheckboxField
                     name="subscribe-controlled"
                     value="yes"
                     checked={checked}
                     onChange={(e) => setChecked(e.target.checked)}
+                    //onChange={handleRoundChange}
                     label="Base Layers"
                   />
                 </Map>
