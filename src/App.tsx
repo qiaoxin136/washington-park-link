@@ -15,6 +15,7 @@ import {
   Popup,
   Marker,
   NavigationControl,
+  GeolocateControl,
 } from "react-map-gl";
 
 import maplibregl from "maplibre-gl";
@@ -612,6 +613,7 @@ function App() {
                     </Popup>
                   )}
                   <NavigationControl position="top-right" />
+                  <GeolocateControl />
                   {/* {showPopup && (
                     <Popup
                       longitude={-80.22}
